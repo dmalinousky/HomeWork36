@@ -53,27 +53,24 @@ public class Car extends Thread {
     }
 
     public void park() throws InterruptedException {
-
-        // If there's some free space
-        if (parking.getParkingPlace() != 0) {
-            parking.setParkingPlace(parking.getParkingPlace() - 1);
-            System.out.println(getCarName() + " is parked.");
-            this.sleep(parkingTime);
+        if (this.getParking().getParkingPlace() != 0) { // If there's some free space
+            synchronized (parking) {
+                this.getParking().setParkingPlace(this.getParking().getParkingPlace() - 1);
+            }
+            System.out.println(this.getCarName() + " is parked.");
+            this.sleep(this.getParkingTime());
             this.leaving();
-            parking.setParkingPlace(parking.getParkingPlace() + 1);
-
-        // If there's no free space
-        } else if (parking.getParkingPlace() == 0) {
-            System.out.println(getCarName() + " is waiting for a free space...");
+        } else if (this.getParking().getParkingPlace() == 0) { // If there's no free space
+            System.out.println(this.getCarName() + " is waiting for a free space...");
             try {
-                this.wait(waitingTime); // Should I catch something there or it's ok to leave empty brackets?
+                this.wait(this.getWaitingTime()); // Should I catch something there or it's ok to leave empty brackets?
             } catch (Exception exception) {}
-
-        // If there's no free space after waiting - car will leave
-            if (parking.getParkingPlace() > 0) {
-                parking.setParkingPlace(parking.getParkingPlace() + 1);
-                System.out.println(getCarName() + " is parked for " + (parkingTime / 1000) + "h.");
-                this.sleep(parkingTime);
+            if (this.getParking().getParkingPlace() != 0) { // If there's no free space after waiting - car will leave
+                synchronized (parking) {
+                    this.getParking().setParkingPlace(this.getParking().getParkingPlace() - 1);
+                }
+                System.out.println(this.getCarName() + " is parked for " + (this.getParkingTime() / 1000) + "h.");
+                this.sleep(this.getParkingTime());
                 this.leaving();
             } else {
                 System.out.println(getCarName() + " is leaving.");
@@ -84,10 +81,15 @@ public class Car extends Thread {
 
     // Leaving method for the ones which were parked for some time
     public void leaving() {
-        System.out.println(getCarName() + " is freeing the parking space. Driver's businesses in the neighbourhood are done.");
+        System.out.println(this.getCarName() + " is freeing the parking space. " +
+                "Driver's businesses in the neighbourhood are done.\n" +
+                "The amount of free places: " + this.getParking().getParkingPlace() + ".");
+        this.interrupt();
+        synchronized (parking) {
+            this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
+        }
         try {
             parking.notifyAll();
         } catch (Exception exception) {}
-        this.interrupt();
     }
 }

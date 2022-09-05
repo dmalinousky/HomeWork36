@@ -1,11 +1,10 @@
 public class HW36MainClass {
     public static void main(String[] args) throws InterruptedException {
-        Parking parking = new Parking();
-        parking.setParkingPlace(20);
-        int counter = 1;
-        // I can do "while (true)" but it's inconvenient
-        while (counter < 2000) {
-            synchronized (parking) {
+        Parking parking = new Parking(20);
+        synchronized (parking.getParkingPlace()) {
+            int counter = 1;
+            // I can do "while (true)" but it's inconvenient
+            while (counter < 1000000) {
                 // Creating a car
                 String carName = "Car-" + counter;
                 counter++;

@@ -1,11 +1,15 @@
 public class Parking {
-    private int parkingPlace;
+    private static Integer parkingPlace;
 
-    public int getParkingPlace() {
+    public Parking(int parkingPlace) {
+        this.parkingPlace = parkingPlace;
+    }
+
+    public synchronized Integer getParkingPlace() {
         return parkingPlace;
     }
 
-    public void setParkingPlace(int parkingPlace) {
+    public synchronized void setParkingPlace(Integer parkingPlace) {
         this.parkingPlace = parkingPlace;
     }
 }
