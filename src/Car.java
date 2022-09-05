@@ -59,13 +59,14 @@ public class Car extends Thread {
             }
             System.out.println(this.getCarName() + " is parked.");
             this.sleep(this.getParkingTime());
-            System.out.println(this.getCarName() + " is freeing the parking space. " +
-                    "Driver's businesses in the neighbourhood are done.\n" +
-                    "The amount of free places: " + this.getParking().getParkingPlace() + ".");
+
             synchronized (HW36MainClass.parking) {
+                System.out.println(this.getCarName() + " is freeing the parking space. " +
+                        "Driver's businesses in the neighbourhood are done.\n" +
+                        "The amount of free places: " + (this.getParking().getParkingPlace() + 1) + ".");
+                this.interrupt();
                 this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
             }
-            this.interrupt();
             try {
                 parking.notifyAll();
             } catch (IllegalMonitorStateException exception) {}
@@ -80,13 +81,13 @@ public class Car extends Thread {
                 }
                 System.out.println(this.getCarName() + " is parked for " + (this.getParkingTime() / 1000) + "h.");
                 this.sleep(this.getParkingTime());
-                System.out.println(this.getCarName() + " is freeing the parking space. " +
-                        "Driver's businesses in the neighbourhood are done.\n" +
-                        "The amount of free places: " + this.getParking().getParkingPlace() + ".");
                 synchronized (HW36MainClass.parking) {
+                    System.out.println(this.getCarName() + " is freeing the parking space. " +
+                            "Driver's businesses in the neighbourhood are done.\n" +
+                            "The amount of free places: " + (this.getParking().getParkingPlace() + 1) + ".");
+                    this.interrupt();
                     this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
                 }
-                this.interrupt();
                 try {
                     parking.notifyAll();
                 } catch (IllegalMonitorStateException exception) {}

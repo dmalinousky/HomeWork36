@@ -4,7 +4,7 @@ public class HW36MainClass {
     public static void main(String[] args) throws InterruptedException {
         int counter = 1;
         // I can do "while (true)" but it's inconvenient
-        while (counter < 1000000) {
+        while (counter < 2000000) {
             // Creating a car
             String carName = "Car-" + counter;
             counter++;
