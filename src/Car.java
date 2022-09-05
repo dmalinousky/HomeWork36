@@ -54,42 +54,46 @@ public class Car extends Thread {
 
     public void park() throws InterruptedException {
         if (this.getParking().getParkingPlace() != 0) { // If there's some free space
-            synchronized (parking) {
+            synchronized (HW36MainClass.parking) {
                 this.getParking().setParkingPlace(this.getParking().getParkingPlace() - 1);
             }
             System.out.println(this.getCarName() + " is parked.");
             this.sleep(this.getParkingTime());
-            this.leaving();
+            System.out.println(this.getCarName() + " is freeing the parking space. " +
+                    "Driver's businesses in the neighbourhood are done.\n" +
+                    "The amount of free places: " + this.getParking().getParkingPlace() + ".");
+            synchronized (HW36MainClass.parking) {
+                this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
+            }
+            this.interrupt();
+            try {
+                parking.notifyAll();
+            } catch (IllegalMonitorStateException exception) {}
         } else if (this.getParking().getParkingPlace() == 0) { // If there's no free space
             System.out.println(this.getCarName() + " is waiting for a free space...");
             try {
                 this.wait(this.getWaitingTime()); // Should I catch something there or it's ok to leave empty brackets?
             } catch (Exception exception) {}
             if (this.getParking().getParkingPlace() != 0) { // If there's no free space after waiting - car will leave
-                synchronized (parking) {
+                synchronized (HW36MainClass.parking) {
                     this.getParking().setParkingPlace(this.getParking().getParkingPlace() - 1);
                 }
                 System.out.println(this.getCarName() + " is parked for " + (this.getParkingTime() / 1000) + "h.");
                 this.sleep(this.getParkingTime());
-                this.leaving();
+                System.out.println(this.getCarName() + " is freeing the parking space. " +
+                        "Driver's businesses in the neighbourhood are done.\n" +
+                        "The amount of free places: " + this.getParking().getParkingPlace() + ".");
+                synchronized (HW36MainClass.parking) {
+                    this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
+                }
+                this.interrupt();
+                try {
+                    parking.notifyAll();
+                } catch (IllegalMonitorStateException exception) {}
             } else {
                 System.out.println(getCarName() + " is leaving.");
                 this.interrupt();
             }
         }
-    }
-
-    // Leaving method for the ones which were parked for some time
-    public void leaving() {
-        System.out.println(this.getCarName() + " is freeing the parking space. " +
-                "Driver's businesses in the neighbourhood are done.\n" +
-                "The amount of free places: " + this.getParking().getParkingPlace() + ".");
-        this.interrupt();
-        synchronized (parking) {
-            this.getParking().setParkingPlace(this.getParking().getParkingPlace() + 1);
-        }
-        try {
-            parking.notifyAll();
-        } catch (Exception exception) {}
     }
 }

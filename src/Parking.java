@@ -5,11 +5,11 @@ public class Parking {
         this.parkingPlace = parkingPlace;
     }
 
-    public synchronized Integer getParkingPlace() {
+    public Integer getParkingPlace() {
         return parkingPlace;
     }
 
-    public synchronized void setParkingPlace(Integer parkingPlace) {
+    public void setParkingPlace(Integer parkingPlace) {
         this.parkingPlace = parkingPlace;
     }
 }
